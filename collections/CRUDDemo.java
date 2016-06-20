@@ -1,8 +1,29 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
-class Customer implements Comparable {//extends Object{
+// 1. Comparable
+// a) U can Maintain only one sort order
+// b) U need to modify the class which u want to sort
+
+// 2. Comparator
+// a) U can maintain many sort orders
+// b) and need not to modify the orginial class , u can create different classes for different kind of sortings
+
+class SortByName implements Comparator<Customer>{
+	public int compare(Customer first, Customer second){
+		return first.getName().compareToIgnoreCase(second.getName());
+	}
+}
+
+class SortByBalance implements Comparator<Customer>{
+	public int compare(Customer first, Customer second){
+		return Double.valueOf(first.getBalance()).compareTo(Double.valueOf(second.getBalance()));
+	}
+}
+
+class Customer implements Comparable<Customer> {//extends Object{
 	private int id;
 	private String name;
 	private double balance;
@@ -11,13 +32,16 @@ class Customer implements Comparable {//extends Object{
 		this.search = search;
 	}
 	@Override
-	public int compareTo(Object o){
+	public int compareTo(Customer o){
+		return this.name.compareTo(o.name);
+	}
+	/*public int compareTo(Object o){
 		Customer c = (Customer)o;
 		return Double.valueOf(this.balance).compareTo(Double.valueOf(c.balance));
 		//return this.name.compareToIgnoreCase(c.name);
 		//return this.name.compareTo(c.name);
 		//return c.name.compareTo(this.name);
-	}
+	}*/
 	
 	private boolean isDigit(){
 		for(int i = 0 ; i<this.search.length(); i++){
@@ -141,7 +165,19 @@ public class CRUDDemo {
 		System.out.println(customerList.get(0));
 		
 		// For Sorting 
-		Collections.sort(customerList);
+		//Collections.sort(customerList);  // Internally Call Comparable
+		//Collections.sort(customerList, new SortByName());  // Internally Call Comparator
+		//Collections.sort(customerList,new SortByBalance());
+		// Anonymous Style for Sorting
+		/*Collections.sort(customerList,new Comparator<Customer>() {
+		public int compare(Customer first, Customer second){
+			return Integer.valueOf(first.getId()).compareTo(Integer.valueOf(second.getId()));
+		}
+		});*/
+		// Lambda Style For Sorting
+		Collections.sort(customerList
+				,(first,second)->
+		Integer.valueOf(first.getId()).compareTo(Integer.valueOf(second.getId())));
 		System.out.println("After Sort List is "+customerList);
 		/*for(Customer customer : customerList){
 			totalBalance = totalBalance + customer.getBalance();
